@@ -14,4 +14,13 @@ export interface Movie {
     genres: string[];
     image: string;
   }
+  export interface MovieItems {
+    id: string;
+    title: string;
+    rating: number;
+    voteCount: number;
+    releaseYear: number;
+    genres: string[];
+    image: string;
+  }
   

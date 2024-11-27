@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { createContext, useContext, useState } from 'react';
-import { Movie } from '@/types/Movie';  // Adjust the import based on your actual Movie type definition
+import { Movie,MovieItems } from '@/types/Movie';  // Adjust the import based on your actual Movie type definition
 import { convertMovieData } from '@/components/utils/convertMovieData';
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveMovie, createReview, updateReview, deleteReview } from '@/actions/MoviesActions';
@@ -96,7 +96,7 @@ interface Review {
   }
   
   interface MovieContextType {
-    movies: Movie[];
+    movies: MovieItems[];
     activeMovie: Movie | null;
     reviews: Review[];
     testimonials: Testimonial[];

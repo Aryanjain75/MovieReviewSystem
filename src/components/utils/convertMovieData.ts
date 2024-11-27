@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Movie } from '@/types/Movie';
+import { MovieItems } from '@/types/Movie';
 
-export const convertMovieData = (data: any): Movie => {
+export const convertMovieData = (data: any): MovieItems => {
     return {
       id: data.node.id,
       title: data.node.titleText.text,
