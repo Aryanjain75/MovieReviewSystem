@@ -49,7 +49,7 @@ function Signup() {
 } finally {
   setLoading(false);
 }
-
+  }
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-gray-100 p-4">
       <Card className="w-full max-w-md bg-gray-800 border border-gray-700 p-5">
