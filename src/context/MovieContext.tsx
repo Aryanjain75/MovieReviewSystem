@@ -5,7 +5,6 @@ import { Movie } from '@/types/Movie';  // Adjust the import based on your actua
 import { useDispatch, useSelector } from 'react-redux';
 import { setActiveMovie, createReview, updateReview, deleteReview } from '@/actions/MoviesActions';
 import { RootState } from '@/services/store'; // Adjust the import path
-import { useUserContext } from './UserDetails';
 import axios from 'axios';
 
 // Define interfaces
