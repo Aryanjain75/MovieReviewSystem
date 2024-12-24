@@ -34,20 +34,21 @@ function Signup() {
 
     setLoading(true);
 
-    try {
-      const res = await axios.post('https://movieapi-rook.onrender.com/auth/signup', {
-        name: formData.name,
-        email: formData.email,
-        password: formData.password,
-      });
-      toast.success(res.data.message);
-      navigate('/login');
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Signup failed');
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+  const res = await axios.post('https://movieapi-rook.onrender.com/auth/signup', {
+    name: formData.name,
+    email: formData.email,
+    password: formData.password,
+  });
+  toast.success(res.data.message);
+  navigate('/login');
+} catch (err: any) {
+  const errorMessage = err.response?.data?.message || 'Signup failed';
+  console.error('Error occurred during signup:', err); // Debugging
+  toast.error(errorMessage);
+} finally {
+  setLoading(false);
+}
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-gray-100 p-4">
