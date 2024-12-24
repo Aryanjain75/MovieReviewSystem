@@ -31,7 +31,7 @@ Welcome to the Movie Review App! This is a React-based web application that allo
 
 - **Backend**: 
   - Node.js (with Express)
-  - MongoDB (for storing movie details and reviews)
+  - Firebase (for storing movie details and reviews)
 
 ## Installation
 
