@@ -8,7 +8,6 @@ import {MovieDetails} from '@/components/MovieDetails';
 import Reviewform from '@/components/Reviewform';
 import ReviewList from '@/components/ReviewList';
 import { LampContainer } from '@/components/ui/lamp';
-import { InfiniteMovingCards } from '@/components/ui/infinite-moving-cards';
 import { Button } from '@/components/ui/button';
 import { X as CloseIcon } from 'lucide-react';
 import axios from 'axios';

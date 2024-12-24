@@ -1,4 +1,3 @@
-import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import MovieDetailsPage from './pages/MovieDetailpages';
@@ -19,7 +18,6 @@ const App = () => (
         {/* <Route path="about" element={<About />} />
         <Route path="dashboard" element={<Dashboard />} /> */}
       </Route>
-
       {/* Catch-All Route */}
       {/* <Route path="*" element={<NotFound />} /> */}
     </Routes>
