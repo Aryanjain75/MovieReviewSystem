@@ -8,20 +8,21 @@ interface Review {
   movieId: string;
   id: string;
   name: string;
+  email:string;
   description: string;
   rating: number;
 }
 
 interface ReviewListProps {
-  reviews: Review[];
+  reviews:  Review[];
   movieId: string;
   deleteReview: (movieId: string, reviewId: string) => void;
   editReview: (review: Review) => void;
 }
 
 const ReviewList: React.FC<ReviewListProps> = ({ reviews, movieId, deleteReview, editReview }) => {
-  const filteredReviews = reviews.filter(review => review.movieId === movieId);
-
+  const filteredReviews = reviews;
+  console.log(filteredReviews);
   return (
     <div className="relative p-8 text-white">
       <div className="text-4xl font-extrabold mb-6 text-center bg-gradient-to-r from-teal-400 to-green-500 bg-clip-text text-transparent">
@@ -32,7 +33,7 @@ const ReviewList: React.FC<ReviewListProps> = ({ reviews, movieId, deleteReview,
       <AnimatePresence>
         {filteredReviews.map((review) => (
           <motion.div
-            key={review.id}
+            key={review.description}
             initial={{ opacity: 0.5, x: 100 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.3, duration: 0.8, ease: "easeInOut" }}

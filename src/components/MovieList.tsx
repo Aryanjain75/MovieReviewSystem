@@ -1,95 +1,206 @@
-import React from 'react';
-import MovieCard from '@/components/MovieCard';
-import { Movie } from '@/types/Movie';
-import  {convertMovieData}  from '@/components/utils/convertMovieData';
-import { Link } from 'react-router-dom';
-// Example JSON data (simplified for demonstration)
+import React, { useEffect, useState } from "react";
+import MovieCard from "@/components/MovieCard";
+import { Link } from "react-router-dom";
+import axios from "axios";
 
-export const jsonData = [
-  {
-    node: {
-      id: "tt26548265",
-      titleText: { text: "Maharaja" },
-      ratingsSummary: { aggregateRating: 8.6, voteCount: 36527 },
-      releaseYear: { year: 2024 },
-      titleGenres: { genres: [{ genre: { text: "Action" }}, { genre: { text: "Crime" }}, { genre: { text: "Drama" }}] },
-      primaryImage: { url: "https://m.media-amazon.com/images/M/MV5BOTFlMTIxOGItZTk0Zi00MTk2LWJiM2UtMzlhZWYzNjQ4N2Y3XkEyXkFqcGc@._V1_.jpg" }
-    }
-  },
-  {
-    node: {
-      id: "tt19838634",
-      titleText: { text: "Ulajh" },
-      ratingsSummary: { aggregateRating: 7.9, voteCount: 19584 },
-      releaseYear: { year: 2024 },
-      titleGenres: { genres: [{ genre: { text: "Thriller" }}] },
-      primaryImage: { url: "https://m.media-amazon.com/images/M/MV5BZDEwZjRlYzMtNDc2Ny00Y2Q4LTk1NmQtYmU3NzZhMzNiZWI4XkEyXkFqcGc@._V1_.jpg" }
-    }
-  },
-  {
-    node: {
-      id: "tt27411674",
-      titleText: { text: "Shekhar Home" },
-      ratingsSummary: { aggregateRating: 8.6, voteCount: 3799 },
-      releaseYear: { year: 2024 },
-      titleGenres: { genres: [{ genre: { text: "Crime" }}, { genre: { text: "Drama" }}] },
-      primaryImage: { url: "https://m.media-amazon.com/images/M/MV5BMTI4M2Y1ZDEtMWE1Mi00YzM5LTk5NGItMDlkNmMzODliM2NmXkEyXkFqcGc@._V1_.jpg" }
-    }
-  },
-  {
-    node: {
-      id: "tt6263850",
-      titleText: { text: "Deadpool & Wolverine" },
-      ratingsSummary: { aggregateRating: 8.1, voteCount: 215821 },
-      releaseYear: { year: 2024 },
-      titleGenres: { genres: [{ genre: { text: "Action" }}, { genre: { text: "Adventure" }}, { genre: { text: "Comedy" }}] },
-      primaryImage: { url: "https://m.media-amazon.com/images/M/MV5BMTI4M2Y1ZDEtMWE1Mi00YzM5LTk5NGItMDlkNmMzODliM2NmXkEyXkFqcGc@._V1_.jpg" }
-    }
-  },
-  {
-    node: {
-      id: "tt5525650",
-      titleText: { text: "The Goat Life" },
-      ratingsSummary: { aggregateRating: 8.1, voteCount: 13703 },
-      releaseYear: { year: 2024 },
-      titleGenres: { genres: [{ genre: { text: "Adventure" }}, { genre: { text: "Drama" }}] },
-      primaryImage: { url: "https://m.media-amazon.com/images/M/MV5BNjUzYzYzMTQtMmU2Yy00YjEzLWEyMDgtNTlkOTAyNzE4ZWQ4XkEyXkFqcGdeQXVyMTUzNTgzNzM0._V1_.jpg" }
-    }
-  },
-  {
-    node: {
-      id: "tt9691290",
-      titleText: { text: "Sharmajee Ki Beti" },
-      ratingsSummary: { aggregateRating: 8.2, voteCount: 4924 },
-      releaseYear: { year: 2024 },
-      titleGenres: { genres: [{ genre: { text: "Comedy" }}, { genre: { text: "Drama" }}] },
-      primaryImage: { url: "https://m.media-amazon.com/images/M/MV5BNWNhNTI5YmMtYWVlMS00N2NkLWE1NWYtMTU2NjA2ZGM3NjQxXkEyXkFqcGc@._V1_.jpg" }
-    }
-  },
-  {
-    node: {
-      id: "tt33040269",
-      titleText: { text: "Ghuspaithiya" },
-      ratingsSummary: { aggregateRating: 9, voteCount: 2148 },
-      releaseYear: { year: 2024 },
-      titleGenres: { genres: [{ genre: { text: "Drama" }}] },
-      primaryImage: { url: "https://m.media-amazon.com/images/M/MV5BMjYzNTE3ZDktYWM3NS00NWYyLWJmMTUtZmJkNmI5MGQ1ZmU4XkEyXkFqcGc@._V1_.jpg" }
-    }
-  }
-];
+export interface Movie {
+  id: string;
+  title: string;
+  ratingsSummary: {
+    aggregateRating: number;
+    voteCount: number;
+  };
+  releaseYear: {
+    endYear: null | number;
+    year: number;
+  };
+  genres: string[];
+  movieImage: string;
+  imageCaption: string;
+}
 
+function App() {
+  const [data, setData] = useState<Movie[]>([]);
+  const [filters, setFilters] = useState({
+    title: "",
+    minYear: "",
+    maxYear: "",
+    minRating: "",
+    maxRating: "",
+    tags: "",
+  });
+  const [availableFilters, setAvailableFilters] = useState({
+    tags: [],
+    certificates: [],
+    releaseYears: [],
+  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize] = useState(8); // Number of movies per page
+  const [totalMovies, setTotalMovies] = useState(0);
 
-const movies: Movie[] = jsonData.map(convertMovieData);
+  useEffect(() => {
+    // Fetch available filters
+    const fetchFilters = async () => {
+      try {
+        const res = await axios.get(`https://movieapi-rook.onrender.com/filters`);
+        setAvailableFilters(res.data.data);
+      } catch (error) {
+        console.error("Error fetching filters:", error);
+      }
+    };
+    fetchFilters();
+  }, []);
 
-const App: React.FC = () => (
-  <div className='flex flex-wrap gap-2 justify-center bg-[#020616]'>
-    {movies.map(movie => (
-      <Link key={movie.id} to={`/review/${movie.id}`}>
-        <MovieCard movie={movie} />
-      </Link>
-    ))}
-  </div>
-);
+  useEffect(() => {
+    // Fetch movies based on filters and pagination
+    const fetchMovies = async () => {
+      try {
+        const start = (currentPage - 1) * pageSize;
+        const end = start + pageSize;
+        const query = new URLSearchParams({
+          start: start.toString(),
+          end: end.toString(),
+          ...filters, // Spread filters into the query
+        }).toString();
+        const res = await axios.get(`https://movieapi-rook.onrender.com/getmovies?${query}`);
+        setData(res.data.paginated);
+        setTotalMovies(res.data.size);
+      } catch (error) {
+        console.error("Error fetching movies:", error);
+      }
+    };
+    fetchMovies();
+  }, [filters, currentPage]); // Refetch when filters or currentPage changes
+
+  const totalPages = Math.ceil(totalMovies / pageSize);
+
+  const handleFilterChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      [e.target.name]: e.target.value,
+    }));
+    setCurrentPage(1); // Reset to first page when filters change
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < totalPages) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  return (
+    <div className="bg-[#020616] min-h-screen">
+      {/* Filter Section */}
+      <div className="p-4">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {/* Title Filter */}
+          <input
+            type="text"
+            name="title"
+            value={filters.title}
+            onChange={handleFilterChange}
+            placeholder="Search by title"
+            className="p-2 rounded bg-gray-800 text-white"
+          />
+
+          {/* Year Range Filters */}
+          <input
+            type="number"
+            name="minYear"
+            value={filters.minYear}
+            onChange={handleFilterChange}
+            placeholder="Min Year"
+            className="p-2 rounded bg-gray-800 text-white"
+          />
+          <input
+            type="number"
+            name="maxYear"
+            value={filters.maxYear}
+            onChange={handleFilterChange}
+            placeholder="Max Year"
+            className="p-2 rounded bg-gray-800 text-white"
+          />
+
+          {/* Rating Range Filters */}
+          <input
+            type="number"
+            step="0.1"
+            name="minRating"
+            value={filters.minRating}
+            onChange={handleFilterChange}
+            placeholder="Min Rating"
+            className="p-2 rounded bg-gray-800 text-white"
+          />
+          <input
+            type="number"
+            step="0.1"
+            name="maxRating"
+            value={filters.maxRating}
+            onChange={handleFilterChange}
+            placeholder="Max Rating"
+            className="p-2 rounded bg-gray-800 text-white"
+          />
+
+          {/* Tags Filter */}
+          <select
+            name="tags"
+            value={filters.tags}
+            onChange={handleFilterChange}
+            className="p-2 rounded bg-gray-800 text-white"
+          >
+            <option value="">Select Tags</option>
+            {availableFilters.tags.map((tag) => (
+              <option key={tag} value={tag}>
+                {tag}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      {/* Movies Section */}
+      <div className="flex flex-wrap gap-2 justify-center p-4">
+        {data.map((movie: Movie) => (
+          <Link key={movie.id} to={`/review/${movie.id}`}>
+            <MovieCard movie={movie} />
+          </Link>
+        ))}
+      </div>
+
+      {/* Pagination */}
+      <div className="flex justify-center items-center gap-4 py-4">
+        <button
+          onClick={handlePreviousPage}
+          disabled={currentPage === 1}
+          className={`px-4 py-2 bg-gray-800 text-white rounded ${
+            currentPage === 1 ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-700"
+          }`}
+        >
+          Previous
+        </button>
+
+        <span className="text-white">
+          Page {currentPage} of {totalPages}
+        </span>
+
+        <button
+          onClick={handleNextPage}
+          disabled={currentPage === totalPages}
+          className={`px-4 py-2 bg-gray-800 text-white rounded ${
+            currentPage === totalPages ? "opacity-50 cursor-not-allowed" : "hover:bg-gray-700"
+          }`}
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export default App;
-

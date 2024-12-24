@@ -24,6 +24,7 @@ export const InfiniteMovingCards = ({
 
   useEffect(() => {
     addAnimation();
+    console.log("items", items);
   }, []);
 
   const [start, setStart] = useState(false);
@@ -57,9 +58,9 @@ export const InfiniteMovingCards = ({
   const getSpeed = () => {
     if (containerRef.current) {
       const durationMap = {
-        fast: "20s",
-        normal: "1500s",
-        slow: "2000s"
+        fast: "15s",
+        normal: "30s",
+        slow: "45s",
       };
       containerRef.current.style.setProperty("--animation-duration", durationMap[speed]);
     }
@@ -84,12 +85,11 @@ export const InfiniteMovingCards = ({
           pauseOnHover && "hover:[animation-play-state:paused]"
         )}
       >
-        {items.map((item, idx) => (
+        {items.map((item) => (
           <li
             className="w-[350px] max-w-full relative rounded-2xl border border-b-0 flex-shrink-0 border-slate-700 px-8 py-6 md:w-[450px]"
             style={{
-              background:
-                "linear-gradient(180deg, var(--slate-800), var(--slate-900)",
+              background: "linear-gradient(180deg, var(--slate-800), var(--slate-900)",
             }}
             key={item.name}
           >
@@ -116,13 +116,21 @@ export const InfiniteMovingCards = ({
         ))}
       </ul>
       <p className="text-center text-gray-400 mt-4">
-        {direction === "left" ? "Items will scroll from right to left." : "Items will scroll from left to right."}
+        {direction === "left"
+          ? "Items will scroll from right to left."
+          : "Items will scroll from left to right."}
       </p>
       <p className="text-center text-gray-400 mt-2">
-        {speed === "fast" ? "Scrolling speed is set to fast." : speed === "normal" ? "Scrolling speed is set to normal." : "Scrolling speed is set to slow."}
+        {speed === "fast"
+          ? "Scrolling speed is set to fast."
+          : speed === "normal"
+          ? "Scrolling speed is set to normal."
+          : "Scrolling speed is set to slow."}
       </p>
       <p className="text-center text-gray-400 mt-2">
-        {pauseOnHover ? "Scrolling pauses when you hover over the items." : "Scrolling continues uninterrupted on hover."}
+        {pauseOnHover
+          ? "Scrolling pauses when you hover over the items."
+          : "Scrolling continues uninterrupted on hover."}
       </p>
     </div>
   );

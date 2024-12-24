@@ -4,11 +4,17 @@ import { CardBody, CardContainer, CardItem } from "@/components/ui/3d-card";
 export interface Movie {
     id: string;
     title: string;
-    rating: number;
-    voteCount: number;
-    releaseYear: number;
+    ratingsSummary: {
+      aggregateRating: number;
+      voteCount: number;
+    };
+    releaseYear: {
+      endYear: number|null;
+      year: number;
+    };
     genres: string[];
-    image: string;
+    movieImage: string;
+    imageCaption: string;
   }
 
 interface MovieCardProps {
@@ -30,14 +36,14 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => (
           translateZ="60"
           className="text-neutral-500 text-sm max-w-sm mt-2 dark:text-neutral-300"
         >
-          Rating: {movie.rating} ({movie.voteCount} votes) | Release Year: {movie.releaseYear}
+          Rating: {movie.ratingsSummary.aggregateRating} ({movie.ratingsSummary.voteCount} votes) | Release Year: {movie.releaseYear.year}
         </CardItem>
         <CardItem translateZ="100" className="w-full mt-4">
           <img
-            src={movie.image}
+            src={movie.movieImage}
             style={{ height: "20rem", width: "auto" }}
             className="h-60 w-full object-cover rounded-xl group-hover/card:shadow-xl"
-            alt={movie.title}
+            alt={movie.imageCaption}
           />
         </CardItem>
         <div className="flex justify-between items-center mt-4">

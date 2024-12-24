@@ -1,14 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Link } from 'react-router-dom';
+import {useUserContext} from '../context/UserDetails';
+import axios from 'axios';
 
 interface Review {
   movieId: string;
   id: string;
   name: string;
+  email:string;
   description: string;
   rating: number;
 }
@@ -19,14 +23,15 @@ interface ReviewformProps {
   updateReview: (movieId: string, review: Review) => void;
   editingReview?: Review | null;
   setEditingReview: (review: Review | null) => void;
+  setTestimonials: any;
 }
 
-const Reviewform: React.FC<ReviewformProps> = ({ movieId, createReview, updateReview, editingReview, setEditingReview }) => {
-  const [name, setName] = useState(editingReview?.name || '');
+const Reviewform: React.FC<ReviewformProps> = ({ movieId, createReview, updateReview, editingReview, setEditingReview ,setTestimonials}) => {
+  const {isAuthenticated ,userDetails}=useUserContext();
+  const [name, setName] = useState(editingReview?.name ||userDetails?.name|| '' );
   const [description, setDescription] = useState(editingReview?.description || '');
   const [rating, setRating] = useState<number | null>(editingReview?.rating ?? null);
   const [errors, setErrors] = useState<{ name?: string; description?: string }>({});
-
   useEffect(() => {
     if (editingReview) {
       setName(editingReview.name);
@@ -34,7 +39,6 @@ const Reviewform: React.FC<ReviewformProps> = ({ movieId, createReview, updateRe
       setRating(editingReview.rating);
     }
   }, [editingReview]);
-
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setName(value);
@@ -57,27 +61,25 @@ const Reviewform: React.FC<ReviewformProps> = ({ movieId, createReview, updateRe
     setRating(parseFloat(e.target.value));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async(e: React.FormEvent) => {
     e.preventDefault();
     if (!errors.name && !errors.description && rating !== null) {
-      const newReview: Review = {
-        movieId,
-        id: editingReview ? editingReview.id : new Date().toISOString(),
-        name,
-        description,
-        rating,
-      };
+      const newReview: Review = {movieId,id: editingReview ? editingReview.id : new Date().toISOString(),name:userDetails?.name||name,description,rating,email:userDetails?.email||'',};
       if (editingReview) {
         updateReview(movieId, newReview);
       } else {
         createReview(movieId, newReview);
       }
+      const [ unauthreview] = await Promise.all([
+        axios.get(`https://movieapi-rook.onrender.com/Review/review/${movieId}/`)
+      ]);
+      setTestimonials([unauthreview.data.data]);
       resetForm();
     }
   };
 
   const resetForm = () => {
-    setName('');
+    setName(userDetails?.name||'');
     setDescription('');
     setRating(null);
     setEditingReview(null);
@@ -134,10 +136,11 @@ const Reviewform: React.FC<ReviewformProps> = ({ movieId, createReview, updateRe
         </div>
       </CardContent>
       <CardFooter>
+        {isAuthenticated?"":<Link to="/Login" className="text-white">Login to submit review</Link>}
         <Button
           className="w-full bg-gradient-to-r from-teal-400 to-green-500 text-white"
           onClick={handleSubmit}
-          disabled={!!(errors.name || errors.description || rating === null)}
+          disabled={!!(errors.name || errors.description || rating === null || !isAuthenticated)}
         >
           {editingReview ? 'Update Review' : 'Submit Review'}
         </Button>

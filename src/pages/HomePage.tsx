@@ -8,7 +8,7 @@ const HomePage: React.FC = () => (
     initial={{ opacity: 0 }}
     animate={{ opacity: 1 }}
     transition={{ duration: 1 }}
-    className="px-4 py-8 bg-black"
+    className="px-4 py-8 bg-black top-4 left-0 w-full h-full"
   >   <LampContainer>
   <motion.h1
     initial={{ opacity: 0.5, y: 100 }}
