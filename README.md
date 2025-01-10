@@ -1,7 +1,8 @@
 # Movie Review App
 
 Welcome to the Movie Review App! This is a React-based web application that allows users to explore movies, view detailed information, and leave their reviews. It leverages modern tools such as React, TypeScript, Framer Motion for animations, and Axios for making API requests.
-
+Frontend:vercel
+Backend:Renderer:  https://movieapi-rook.onrender.com/
 ## Table of Contents
 - [Features](#features)
 - [Tech Stack](#tech-stack)
