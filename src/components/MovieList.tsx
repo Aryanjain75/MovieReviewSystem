@@ -10,10 +10,7 @@ export interface Movie {
     aggregateRating: number;
     voteCount: number;
   };
-  releaseYear: {
-    endYear: null | number;
-    year: number;
-  };
+  releaseYear: number;
   genres: string[];
   movieImage: string;
   imageCaption: string;
@@ -63,6 +60,7 @@ function App() {
           ...filters, // Spread filters into the query
         }).toString();
         const res = await axios.get(`https://movieapi-rook.onrender.com/getmovies?${query}`);
+        console.log(res);
         setData(res.data.paginated);
         setTotalMovies(res.data.size);
       } catch (error) {

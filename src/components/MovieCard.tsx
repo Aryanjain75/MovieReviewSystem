@@ -8,10 +8,7 @@ export interface Movie {
       aggregateRating: number;
       voteCount: number;
     };
-    releaseYear: {
-      endYear: number|null;
-      year: number;
-    };
+    releaseYear:number;
     genres: string[];
     movieImage: string;
     imageCaption: string;
@@ -22,6 +19,7 @@ interface MovieCardProps {
 }
 
 const MovieCard: React.FC<MovieCardProps> = ({ movie }) => (
+
   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
     <CardContainer className="inter-var w-[300px]" >
       <CardBody className="bg-transparent relative group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] border-white/[0.2]  w-auto sm:w-[30rem] h-auto rounded-xl p-6 border">
@@ -36,7 +34,7 @@ const MovieCard: React.FC<MovieCardProps> = ({ movie }) => (
           translateZ="60"
           className="text-neutral-500 text-sm max-w-sm mt-2 dark:text-neutral-300"
         >
-          Rating: {movie.ratingsSummary.aggregateRating} ({movie.ratingsSummary.voteCount} votes) | Release Year: {movie.releaseYear.year}
+          Rating: {movie?.ratingsSummary?.aggregateRating} ({movie?.ratingsSummary?.voteCount} votes) | Release Year: {movie?.releaseYear ||"N/A"}
         </CardItem>
         <CardItem translateZ="100" className="w-full mt-4">
           <img
